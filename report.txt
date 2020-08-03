@@ -1,0 +1,136 @@
+Milo Kearney
+405403971
+
+1) My implementation of doubly-linked lists:
+
+My 2xlinked list contains a dummy node and is circular. It includes the private members Node* head to improve clarity of the code (instead of sayign &dummy) and of course a member dummy node. Every node stores a value of a changeable type ItemType; New nodes are inserted directly before the dummy node (considered the "end").
+
+2) Pseudocode
+
+Copy Constructor:
+initialize member variables (dummy, head)
+for each item in the set-to-be-copied, insert it into the current set
+
+Destructor:
+set a temp node* to the first item
+iterate through the list and delete every item that isn't the dummy node
+
+Oparator=:
+check for aliasing
+delete every item from the current set
+insert every item into the current set from the rh set
+return *this
+
+Insert:
+Iterate through to check if value already exists in the list.
+Return false of it does.
+else create a new node and set its pointers to next and prev appropriately
+increase m_size
+return true
+
+Get:
+For every item in the list
+	compare that item to every other item in the list and track how many times it is greater than those items
+	compare the count of > evaluations for that item to the desired amount
+if the count == the desired value, set the &value and return true
+else return false
+
+Swap:
+swap head pointers
+swap the dummy.m_next pointers for each set's dummy node
+swap the dummy.m_prev pointers for each set's dummy node
+
+Unite:
+set the resultant to set1
+for each item in s2
+	get a unique item
+	call result's insert function with the unique item as a parameter (will fail if duplicate)
+
+Subtract
+set the resultant to set1
+for each item in s2
+	get a unique item
+	call result's erase function with the unique item as a parameter (will fail if item not in result)
+
+3)Test cases:
+
+#include <cassert>
+#include <iostream>
+#include <string>
+#include "Set.h"
+
+using namespace std;
+
+int main() {
+    
+
+    Set ss;
+    Set ooh;
+    Set a;
+
+    cerr << "Testing insert()" << endl;
+    a.insert("aaa");
+    a.insert("bbb");
+    a.insert("ccc");
+    a.insert("ddd");
+    assert(a.contains("ddd"));
+    assert(a.insert("ddd") == false);
+
+    cerr << "Testing operator=()" << endl;
+    ooh = a;
+    ss = a;
+    assert(ooh.size() == a.size() && a.size() == ss.size());
+    ooh.erase("ddd");
+    assert(ooh.size() != a.size() && a.size() == ss.size());
+    assert(a.contains("aaa"));
+
+
+    cerr << "Testing CopyConstructor" << endl;
+    Set c(a);
+    Set d(a);
+    assert(c.size() == a.size());
+    assert(d.size() == c.size());
+
+
+    cerr << "Testing operator=()" << endl;
+    Set b;
+    a = b;
+    ss = b;
+    ooh = b;
+    ooh = ss;
+    assert(ooh.empty()&&ss.empty()&&a.empty());
+
+    cerr << "Testing swap()" << endl;
+    a.insert("aaa");
+    a.insert("bbb");
+    a.insert("ccc");
+    b.swap(a);
+    assert(b.contains("aaa") && b.size()==3&&!a.contains("aaa") && !a.contains("bbb")&&!a.contains("ccc"));
+
+    cerr << "Testing unite()" << endl;
+    Set unity;
+    a = unity;
+    b = unity;
+    //all are empty now
+    a.insert("a"); a.insert("b"); a.insert("c"); a.insert("d");
+    b.insert("d"); b.insert("e"); b.insert("f");
+    unite(a, b, unity);
+    unity.dump();
+    assert(unity.size() == 6);
+    assert(a.size() == 4);
+    assert(b.size() == 3);
+
+    cerr << "Testing subtract()" << endl;
+    subtract(a, b, unity);
+    unity.dump();
+    assert(unity.contains("a") && unity.contains("b") && unity.contains("c"));
+    assert(unity.size()==3);
+
+}
+
+
+
+
+
+
+
